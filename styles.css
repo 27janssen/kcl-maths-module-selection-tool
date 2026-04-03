@@ -342,5 +342,5 @@ footer {
 
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #87ceeb, #4682b4);
-    border-radius: px;
+    border-radius: 6px;
 }
