@@ -353,7 +353,7 @@ footer {
     padding: 36px;
     border-radius: 8px;
     backdrop-filter: blur(10px);
-    position: relative;
+    position: static;
     overflow: hidden;
     margin-bottom: 70px;
     opacity: 0;
