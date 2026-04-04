@@ -1,51 +1,57 @@
-// Wait for EVERYTHING to load (HTML + CSS + Images + Fonts)
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     console.log("✅ FULLY LOADED - Applying JS effects");
-    
-    // Smooth scrolling
-    document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+
+    // ── Smooth scrolling ──────────────────────────────────────────────────
+    document.querySelectorAll('nav a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            var target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
-    
-    // Parallax effect
-    let ticking = false;
+
+    // ── Parallax ──────────────────────────────────────────────────────────
+    //
+    // IMPORTANT: We must NOT use CSS transform on position:fixed elements.
+    // Applying transform to a fixed element breaks its fixed positioning
+    // (it creates a new stacking/containing block) — this is a known browser
+    // quirk and is why the parallax looked wrong on GitHub Pages.
+    //
+    // Instead we move the temple-bg with translateY (it is fixed but its
+    // visual shift is purely cosmetic) and we animate the dots container by
+    // nudging a CSS variable that shifts the pseudo-elements inside it,
+    // keeping the container itself un-transformed.
+
+    var templeBg = document.querySelector('.temple-bg');
+    var dotContainer = document.querySelector('.parallax-dots');
+    var ticking = false;
+
     function updateParallax() {
-        const scrolled = window.pageYOffset;
-        
-        // Temple background (subtle background movement)
-        const templeBg = document.querySelector('.temple-bg');
+        var scrolled = window.pageYOffset;
+
+        // Subtle upward drift on the background
         if (templeBg) {
-            templeBg.style.transform = `translateY(${scrolled * 0.5}px)`;
+            templeBg.style.transform = 'translateY(' + (scrolled * 0.3) + 'px)';
         }
-        
-        // Foreground dots (move opposite direction)
-        const dots = document.querySelector('.parallax-dots');
-        if (dots) {
-            dots.style.transform = `translateY(${scrolled * -0.2}px)`;
+
+        // Shift the orbs by moving their shared top offset via a CSS variable.
+        // The container stays un-transformed so fixed positioning is preserved.
+        if (dotContainer) {
+            dotContainer.style.setProperty('--parallax-offset', (scrolled * -0.15) + 'px');
         }
-        
+
         ticking = false;
     }
-    
-    // Throttled scroll listener
-    window.addEventListener('scroll', () => {
+
+    window.addEventListener('scroll', function () {
         if (!ticking) {
             requestAnimationFrame(updateParallax);
             ticking = true;
         }
     });
-    
-    // Initial position
+
     updateParallax();
-    
     console.log("🎉 JS fully applied - Parallax + Smooth scroll active!");
 });
