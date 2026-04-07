@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>All Courses</title>
+<title>BSc Mathematics with Management and Finance</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, sans-serif; background: #fff; color: #111; padding: 1.5rem; }
@@ -42,10 +42,10 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #111; paddin
 <body>
 
 <nav class="nav">
-  <a class="nav-btn active" href="all_courses.html">All Courses</a>
+  <a class="nav-btn" href="index.html">All Courses</a>
   <a class="nav-btn" href="bsc_mathematics.html">BSc Mathematics</a>
   <a class="nav-btn" href="bsc_mathswithstats.html">BSc Mathematics with Statistics</a>
-  <a class="nav-btn" href="bsc_mathswithfinance.html">BSc Mathematics with Management and Finance</a>
+  <a class="nav-btn active" href="bsc_mathswithfinance.html">BSc Mathematics with Management and Finance</a>
   <a class="nav-btn" href="bsc_mathsandphil.html">BSc Mathematics and Philosophy</a>
 </nav>
 
@@ -63,52 +63,45 @@ body { font-family: system-ui, sans-serif; background: #fff; color: #111; paddin
 const SEMESTERS = ["Year 1 S1","Year 1 S2","Year 2 S1","Year 2 S2","Year 3 S1","Year 3 S2"];
 
 const modules = [
-  {id:"m1",  code:"4CCM111A", name:"Calculus I",                                             sem:0, prereqs:[], repeatedPrereqs:[]},
-  {id:"m2",  code:"4CCM113A", name:"Linear Algebra & Geometry I",                            sem:0, prereqs:[], repeatedPrereqs:[]},
-  {id:"m3",  code:"4CCM115A", name:"Sequences & Series",                                     sem:0, prereqs:[], repeatedPrereqs:[]},
-  {id:"m4",  code:"4CCM121A", name:"Introduction to Algebra",                                sem:0, prereqs:[], repeatedPrereqs:[]},
-  {id:"m5",  code:"4CCM112A", name:"Calculus II",                                            sem:1, prereqs:["m1"], repeatedPrereqs:[]},
-  {id:"m6",  code:"4CCM114A", name:"Linear Algebra & Geometry II",                           sem:1, prereqs:["m2"], repeatedPrereqs:[]},
-  {id:"m7",  code:"4CCM131A", name:"Introduction to Dynamical Systems",                      sem:1, prereqs:["m1","m2"], repeatedPrereqs:[]},
-  {id:"m8",  code:"4CCM141A", name:"Probability & Statistics I",                             sem:1, prereqs:[], repeatedPrereqs:[]},
-  {id:"m9",  code:"5CCM221A", name:"Real Analysis",                                          sem:2, prereqs:["m1","m3"], repeatedPrereqs:[]},
+  {id:"m1",  code:"4CCM111A (Compulsory)", name:"Calculus I",                                             sem:0, prereqs:[], repeatedPrereqs:[]},
+  {id:"m2",  code:"4CCM113A (Compulsory)", name:"Linear Algebra & Geometry I",                            sem:0, prereqs:[], repeatedPrereqs:[]},
+  {id:"m3",  code:"4CCM115A (Compulsory)", name:"Sequences & Series",                                     sem:0, prereqs:[], repeatedPrereqs:[]},
+  {id:"m5",  code:"4CCM112A (Compulsory)", name:"Calculus II",                                            sem:1, prereqs:["m1"], repeatedPrereqs:[]},
+  {id:"m7",  code:"4CCM131A (Compulsory)", name:"Introduction to Dynamical Systems",                      sem:1, prereqs:["m1","m2"], repeatedPrereqs:[]},
+  {id:"m8",  code:"4CCM141A (Compulsory)", name:"Probability & Statistics I",                             sem:1, prereqs:[], repeatedPrereqs:[]},
+  {id:"m9",  code:"5CCM221A (Compulsory)", name:"Real Analysis",                                          sem:2, prereqs:["m1","m3"], repeatedPrereqs:[]},
+  {id:"m24", code:"5CCM121B (Compulsory)", name:"Introduction to Algebra",                                sem:2, prereqs:[], repeatedPrereqs:[]},
   {id:"m10", code:"5CCM231A", name:"Classical Dynamics",                                     sem:2, prereqs:["m7"], repeatedPrereqs:[]},
-  {id:"m11", code:"5CCM232A", name:"Groups and Symmetries",                                  sem:2, prereqs:[], repeatedPrereqs:[]},
-  {id:"m12", code:"5CCM224A", name:"Introduction to Number Theory",                          sem:2, prereqs:["m4"], repeatedPrereqs:["m24"]},
+  {id:"m11", code:"5CCM231A", name:"Groups and Symmetries",                                  sem:2, prereqs:[], repeatedPrereqs:[]},
+  {id:"m12", code:"5CCM224A", name:"Introduction to Number Theory",                          sem:2, prereqs:["m4","m24"], repeatedPrereqs:[]},
   {id:"m13", code:"5CCM241A", name:"Probability & Statistics II",                            sem:2, prereqs:["m8"], repeatedPrereqs:[]},
   {id:"m14", code:"5CCM376A", name:"Random Structures & Algorithms",                         sem:2, prereqs:[], repeatedPrereqs:[]},
-  {id:"m15", code:"5CCM211A", name:"Applied Differential Equations",                         sem:3, prereqs:["m5","m9"], repeatedPrereqs:[]},
+  {id:"m25", code:"5CCM114B (Compulsory)", name:"Linear Algebra & Geometry II",                           sem:3, prereqs:["m2"], repeatedPrereqs:[]},
+  {id:"m15", code:"5CCM211A (Compulsory)", name:"Applied Differential Equations",                         sem:3, prereqs:["m5","m9"], repeatedPrereqs:[]},
   {id:"m16", code:"5CCM212A", name:"Complex Analysis",                                       sem:3, prereqs:["m5","m9"], repeatedPrereqs:[]},
   {id:"m17", code:"5CCM152B", name:"Computational Methods for Mathematics",                  sem:3, prereqs:[], repeatedPrereqs:[]},
-  {id:"m18", code:"5CCM223A", name:"Geometry of Surfaces",                                   sem:3, prereqs:["m1","m2","m6","m5","m7"], repeatedPrereqs:["m25"]},
-  {id:"m19", code:"5CCM234A", name:"Introductory Quantum Theory",                            sem:3, prereqs:["m5","m6","m15"], repeatedPrereqs:["m25"]},
   {id:"m20", code:"5CCM242A", name:"Statistical Modelling",                                  sem:3, prereqs:["m13"], repeatedPrereqs:[]},
   {id:"m21", code:"5CCM251A", name:"Discrete Mathematics",                                   sem:3, prereqs:[], repeatedPrereqs:[]},
   {id:"m22", code:"5CCM377A", name:"Applied Probability Models",                             sem:3, prereqs:["m8"], repeatedPrereqs:[]},
-  {id:"m23", code:"5CCM141B", name:"Probability & Statistics I",                             sem:3, prereqs:[], repeatedPrereqs:[]},
-  {id:"m24", code:"5CCM121B", name:"Introduction to Algebra",                                sem:2, prereqs:[], repeatedPrereqs:[]},
-  {id:"m25", code:"5CCM114B", name:"Linear Algebra & Geometry II",                           sem:3, prereqs:["m2"], repeatedPrereqs:[]},
+  {id:"m31", code:"6CCM388A (Compulsory)", name:"Mathematical Finance I",                                 sem:4, prereqs:["m8"], repeatedPrereqs:["m23"]},
   {id:"m26", code:"6CCM314A", name:"Mathematical Foundations for Complex Systems Modelling", sem:4, prereqs:["m8","m1","m5","m9"], repeatedPrereqs:["m23"]},
   {id:"m27", code:"6CCM226B", name:"Metric Spaces & Topology",                               sem:4, prereqs:["m9"], repeatedPrereqs:[]},
   {id:"m28", code:"6CCM331A", name:"Special Relativity and Electromagnetism",                sem:4, prereqs:["m5","m15","m11"], repeatedPrereqs:[]},
   {id:"m29", code:"6CCM341A", name:"Fundamentals of Probability Theory",                     sem:4, prereqs:["m9","m8"], repeatedPrereqs:[]},
-  {id:"m30", code:"6CCM350A", name:"Rings & Modules",                                        sem:4, prereqs:["m4","m6"], repeatedPrereqs:["m24","m25"]},
-  {id:"m31", code:"6CCM388A", name:"Mathematical Finance I",                                 sem:4, prereqs:["m8"], repeatedPrereqs:["m23"]},
-  {id:"m32", code:"6CCM436A", name:"Advanced Quantum Mechanics",                             sem:4, prereqs:["m10","m19"], repeatedPrereqs:[]},
-  {id:"m33", code:"6CCMCS02", name:"Theory of Complex Networks",                             sem:4, prereqs:["m5","m6","m8"], repeatedPrereqs:["m23","m25"]},
-  {id:"m34", code:"6CCM224B", name:"Introduction to Number Theory",                          sem:4, prereqs:["m4"], repeatedPrereqs:["m24"]},
+  {id:"m30", code:"6CCM350A", name:"Rings & Modules",                                        sem:4, prereqs:["m4","m6","m24","m25"], repeatedPrereqs:[]},
+  {id:"m33", code:"6CCMCS02", name:"Theory of Complex Networks",                             sem:4, prereqs:["m5","m6","m8","m23","m25"], repeatedPrereqs:[]},
+  {id:"m34", code:"6CCM224B", name:"Introduction to Number Theory",                          sem:4, prereqs:["m4","m24"], repeatedPrereqs:[]},
   {id:"m35", code:"6CCM241B", name:"Probability & Statistics II",                            sem:4, prereqs:["m8"], repeatedPrereqs:["m23"]},
   {id:"m36", code:"6CCM347A", name:"Design of Experiments",                                  sem:4, prereqs:["m20"], repeatedPrereqs:[]},
   {id:"m37", code:"6CCM359A", name:"Numerical & Computational Methods with Python",          sem:4, prereqs:[], repeatedPrereqs:[]},
   {id:"m38", code:"6CCM376B", name:"Random Structures & Algorithms",                         sem:4, prereqs:[], repeatedPrereqs:[]},
+  {id:"m42", code:"6CCM338A (Compulsory)", name:"Mathematical Finance II",                                sem:5, prereqs:["m8","m13","m31"], repeatedPrereqs:["m23","m35"]},
   {id:"m39", code:"6CCM318A", name:"Fourier Analysis",                                       sem:5, prereqs:["m9"], repeatedPrereqs:[]},
   {id:"m40", code:"6CCM326A", name:"Galois Theory",                                          sem:5, prereqs:["m30"], repeatedPrereqs:[]},
   {id:"m41", code:"6CCM334A", name:"Space-Time Geometry and General Relativity",             sem:5, prereqs:["m28"], repeatedPrereqs:[]},
-  {id:"m42", code:"6CCM338A", name:"Mathematical Finance II",                                sem:5, prereqs:["m8","m13","m31"], repeatedPrereqs:["m23","m35"]},
   {id:"m43", code:"6CCM351A", name:"Representation Theory of Finite Groups",                 sem:5, prereqs:["m11"], repeatedPrereqs:[]},
   {id:"m44", code:"6CCMCS05", name:"Mathematical Biology",                                   sem:5, prereqs:["m7","m8"], repeatedPrereqs:["m23"]},
-  {id:"m45", code:"6CCM223B", name:"Geometry of Surfaces",                                   sem:5, prereqs:["m1","m2","m6","m5","m7"], repeatedPrereqs:["m25"]},
-  {id:"m46", code:"6CCM327A", name:"Geometric Topology",                                     sem:5, prereqs:["m27","m18"], repeatedPrereqs:[]},
+  {id:"m45", code:"6CCM223B", name:"Geometry of Surfaces",                                   sem:5, prereqs:["m1","m2","m6","m5","m7","m25"], repeatedPrereqs:[]},
   {id:"m47", code:"6CCM242B", name:"Statistical Modelling",                                  sem:5, prereqs:["m13"], repeatedPrereqs:["m35"]},
   {id:"m48", code:"6CCM242B", name:"Introductory Quantum Theory",                            sem:5, prereqs:["m5","m6","m15"], repeatedPrereqs:["m25"]},
   {id:"m49", code:"6CCM342A", name:"Statistical Inference",                                  sem:5, prereqs:["m13"], repeatedPrereqs:["m35"]},
