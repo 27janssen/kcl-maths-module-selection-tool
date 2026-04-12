@@ -1,0 +1,3 @@
+When I was selecting my modules for my second year on BSc Mathematics & Philosophy I was met with a really overwhelming table on https://keats.kcl.ac.uk/. I wanted to create a small tool which helps students find out what the modules they're selecting for second year allows them to do in third year (possibly fourth - if I get around to adding it in), and how many opportunities they have to pick a specific module (e.g. You can pick Introduction to Number Theory in either Year 2 or Year 3).
+
+I hope this tool is useful to KCL Mathematics students and helps them make the best possible module selection choices for themselves! <3
