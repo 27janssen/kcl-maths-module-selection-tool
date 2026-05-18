@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KCL Maths Module Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="site-wrapper">
+  <script src="sidebar.js"></script>
+  <script>renderSidebar('home');</script>
+
+  <main class="main">
+    <div class="home-hero">
+      <div class="page-eyebrow">King's College London · Mathematics</div>
+      <h1 class="home-title">Your <span>module</span><br>guide, organised.</h1>
+      <p class="home-subtitle">
+        With this site, you can explore all the modules available in the Department of Mathematics at King's College London. With this tool you can research module prerequisites and shape your degree — all in one place more accessible than KEATS.
+      </p>
+      <a href="selection.html" class="home-cta">→ Open Module Selection</a>
+    </div>
+
+    <div class="page-body">
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-number">50</div>
+          <div class="stat-label">Total Modules Mapped</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4</div>
+          <div class="stat-label">Mathematics Courses Mapped</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Module Levels Mapped</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">6</div>
+          <div class="stat-label">Semesters Mapped</div>
+        </div>
+      </div>
+
+      <div class="two-col" style="gap:20px; margin-bottom: 24px;">
+        <div class="card">
+          <div class="card-title">
+            What is this site?
+            <span class="card-title-tag">About</span>
+          </div>
+          <p style="color:var(--text2); font-size:13px; line-height:1.75; margin-bottom:12px;">
+            The <strong>KCL Mathematics Module Hub</strong> is a student-made resource for navigating the specification of KCL's Mathematics Courses. It provides an interactive prerequisite map for each degree within the department, a full browsable module list, and individual pages for every module with descriptions, assessment details, lecture notes, and past papers.
+          </p>
+          <p style="color:var(--text2); font-size:13px; line-height:1.75;">
+            Use the <strong>Module Selection</strong> tool to visualise which modules unlock which — click any module card to highlight its prerequisites (green/blue) and the modules it unlocks (red). Double-clicking a module allows you to view a dedicated page for the module.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            Quick Links
+            <span class="card-title-tag">Navigate</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a href="selection.html" class="module-list-item" style="border:1px solid var(--border);">
+              <span class="module-list-code">[]</span>
+              <span class="module-list-name">Module Selection Tool</span>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">→</span>
+            </a>
+            <a href="module-list.html" class="module-list-item" style="border:1px solid var(--border);">
+              <span class="module-list-code">::</span>
+              <span class="module-list-name">Full Module List by Level</span>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">→</span>
+            </a>
+            <a href="about.html" class="module-list-item" style="border:1px solid var(--border);">
+              <span class="module-list-code">/></span>
+              <span class="module-list-name">About the Creator</span>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Degree Programmes
+          <span class="card-title-tag">4 courses</span>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-top:4px;">
+          <a href="selection.html?course=maths" style="text-decoration:none;">
+            <div style="padding:16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--purple-light)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--purple);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Level 6 Exit</div>
+              <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);">BSc Mathematics</div>
+            </div>
+          </a>
+          <a href="selection.html?course=stats" style="text-decoration:none;">
+            <div style="padding:16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--purple-light)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--purple);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Level 6 Exit</div>
+              <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);">BSc Mathematics with Statistics</div>
+            </div>
+          </a>
+          <a href="selection.html?course=finance" style="text-decoration:none;">
+            <div style="padding:16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--purple-light)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--purple);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Level 6 Exit</div>
+              <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);">BSc Maths with Management & Finance</div>
+            </div>
+          </a>
+          <a href="selection.html?course=phil" style="text-decoration:none;">
+            <div style="padding:16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--purple-light)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--purple);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Level 6 Exit</div>
+              <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--text);">BSc Mathematics and Philosophy</div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <br>
+      <div class="card">
+          <div class="card-title">What's Coming Next?</div>
+          <div class="placeholder-block">
+            If I am to continue mapping modules on this website, I would next wish to dive into mapping the modules for MSci Mathematics, and BSc Mathematics for Quantitative Problem-Solving when it is introduced. I would also like to provide a map for where every module fits within each field of Mathematics, both Pure and Applied.
+          </div>
+        </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

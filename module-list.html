@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module List · KCL Maths</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="site-wrapper">
+  <script src="sidebar.js"></script>
+  <script>renderSidebar('modules');</script>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="page-eyebrow">Curriculum</div>
+      <h1 class="page-title">Module List</h1>
+      <div class="page-subtitle">All modules by year level — click any module to view its page</div>
+    </div>
+
+    <div class="page-body">
+      <div id="module-list-container"></div>
+    </div>
+  </main>
+</div>
+
+<script src="modules-data.js"></script>
+<script>
+const SEM_NAMES = ["Year 1 · Sem 1","Year 1 · Sem 2","Year 2 · Sem 1","Year 2 · Sem 2","Year 3 · Sem 1","Year 3 · Sem 2"];
+
+const COMPULSORY_CODES = new Set([
+  "4CCM111A","4CCM113A","4CCM115A","4CCM121A",
+  "4CCM112A","4CCM114A","4CCM131A","4CCM141A",
+  "5CCM221A"
+]);
+
+const levels = [4,5,6];
+const levelLabels = { 4: "Level 4 — Year 1", 5: "Level 5 — Year 2", 6: "Level 6 — Year 3" };
+const levelTagClass = { 4: "tag-level1", 5: "tag-level2", 6: "tag-level3" };
+
+const container = document.getElementById('module-list-container');
+
+levels.forEach(lv => {
+  const mods = ALL_MODULES.filter(m => m.level === lv);
+
+  const section = document.createElement('div');
+  section.className = 'level-section';
+
+  const header = document.createElement('div');
+  header.className = 'level-header';
+  header.innerHTML = `
+    <h2 class="level-title">${levelLabels[lv]}</h2>
+    <span class="tag ${levelTagClass[lv]}">${mods.length} modules</span>
+  `;
+  section.appendChild(header);
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.padding = '8px';
+
+  // Group by semester
+  const semGroups = {};
+  mods.forEach(m => {
+    if (!semGroups[m.sem]) semGroups[m.sem] = [];
+    semGroups[m.sem].push(m);
+  });
+
+  Object.entries(semGroups).forEach(([sem, semMods]) => {
+    const semLabel = document.createElement('div');
+    semLabel.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;padding:12px 8px 6px;';
+    semLabel.textContent = SEM_NAMES[+sem];
+    card.appendChild(semLabel);
+
+    semMods.forEach(m => {
+      const a = document.createElement('a');
+      a.href = modulePagePath(m.code);
+      a.className = 'module-list-item';
+
+      const isComp = COMPULSORY_CODES.has(m.code);
+
+      a.innerHTML = `
+        <span class="module-list-code">${m.code}</span>
+        <span class="module-list-name">${m.name}</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:4px;">→</span>
+      `;
+      card.appendChild(a);
+    });
+  });
+
+  section.appendChild(card);
+  container.appendChild(section);
+});
+</script>
+</body>
+</html>
