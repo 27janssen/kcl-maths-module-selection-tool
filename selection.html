@@ -16,6 +16,7 @@
     margin-bottom: 14px;
     padding: 0 2px;
   }
+
 </style>
 </head>
 <body>
@@ -33,9 +34,11 @@
     <div class="page-body">
       <div class="pill-nav" id="course-tabs">
         <button class="pill-btn active" data-course="maths">BSc Mathematics</button>
-        <button class="pill-btn" data-course="stats">BSc Maths with Statistics</button>
-        <button class="pill-btn" data-course="finance">BSc Maths with Finance</button>
-        <button class="pill-btn" data-course="phil">BSc Maths & Philosophy</button>
+        <button class="pill-btn active" data-course="mmaths">MSci Mathematics</button>
+        <button class="pill-btn" data-course="stats">BSc Mathematics with Statistics</button>
+        <button class="pill-btn" data-course="finance">BSc Mathematics with Management and Finance</button>
+        <button class="pill-btn" data-course="phil">BSc Mathematics & Philosophy</button>
+        <button class="pill-btn" data-course="quant">BSc Mathematics for Quantitative Problem Solving</button>
       </div>
 
       <div class="legend">
@@ -53,25 +56,35 @@
 
 <script src="modules-data.js"></script>
 <script>
-const SEMESTERS = ["Year 1 · Sem 1","Year 1 · Sem 2","Year 2 · Sem 1","Year 2 · Sem 2","Year 3 · Sem 1","Year 3 · Sem 2"];
+// Sem indices: 0=Y1S1, 1=Y1S2, 2=Y2S1, 3=Y2S2, 4=Y3S1, 5=Y3S2, 6=Y3 Full Year, 7=Y4S1, 8=Y4S2, 9=Y4 Full Year
+const SEM_LABELS = {
+  0: "Year 1 · Sem 1", 1: "Year 1 · Sem 2",
+  2: "Year 2 · Sem 1", 3: "Year 2 · Sem 2",
+  4: "Year 3 · Sem 1", 5: "Year 3 · Sem 2",
+  7: "Year 4 · Sem 1", 8: "Year 4 · Sem 2"
+};
 
 // Per-course module lists (ids + compulsory flags)
 const COURSES = {
   maths: {
     compulsory: new Set(["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m15","m16"]),
-    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m32","m33","m34","m35","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51"]
+    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m32","m33","m34","m35","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51","m100"]
+  },
+  mmaths: {
+    compulsory: new Set(["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m15","m16","m101"]),
+    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m32","m33","m34","m35","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51","m100","m53","m54","m55","m56","m67","m57","m58","m59","m60","m61","m62","m63","m64","m65","m79","m80","m81","m82","m83","m84","m85","m87","m88","m89","m90","m91","m93","m94","m96","m97","m98","m99","m101"]
   },
   stats: {
     compulsory: new Set(["m1","m2","m3","m4","m5","m6","m7","m8","m9","m13","m20","m36","m49","m50"]),
-    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m33","m34","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51","m52"]
+    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m33","m34","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51","m52","m100"]
   },
   finance: {
     compulsory: new Set(["m1","m2","m3","m5","m7","m8","m9","m24","m25","m15","m31","m42"]),
-    ids: ["m1","m2","m3","m5","m7","m8","m9","m24","m10","m11","m12","m13","m14","m25","m15","m16","m17","m20","m21","m22","m31","m26","m27","m28","m29","m30","m33","m34","m35","m36","m37","m38","m42","m39","m40","m41","m43","m44","m45","m47","m48","m49","m50","m51","m52"]
+    ids: ["m1","m2","m3","m5","m7","m8","m9","m24","m10","m11","m12","m13","m14","m25","m15","m16","m17","m20","m21","m22","m31","m26","m27","m28","m29","m30","m33","m34","m35","m36","m37","m38","m42","m39","m40","m41","m43","m44","m45","m47","m48","m49","m50","m51","m52","m100"]
   },
   phil: {
     compulsory: new Set(["m1","m2","m3","m5","m7","m9","m24","m25"]),
-    ids: ["m1","m2","m3","m5","m7","m9","m24","m10","m12","m14","m25","m15","m16","m18","m19","m21","m23","m26","m27","m28","m30","m31","m33","m34","m35","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m51","m52"]
+    ids: ["m1","m2","m3","m5","m7","m9","m24","m10","m12","m14","m25","m15","m16","m18","m19","m21","m23","m26","m27","m28","m30","m31","m33","m34","m35","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m51","m52","m100"]
   }
 };
 
@@ -96,12 +109,40 @@ function getRepeatedEnables(id, mods) {
   return mods.filter(m => m.repeatedPrereqs.includes(id)).map(m => m.id);
 }
 
+function buildModuleCard(m, course, prereqIds, repeatedPrereqIds, enablesIds, repeatedEnablesIds) {
+  const el = document.createElement('div');
+  el.className = 'module-card';
+  if (selected) {
+    if (m.id === selected)                       el.classList.add('selected');
+    else if (prereqIds.includes(m.id))           el.classList.add('prereq');
+    else if (repeatedPrereqIds.includes(m.id))   el.classList.add('prereq-dup');
+    else if (enablesIds.includes(m.id))          el.classList.add('enables');
+    else if (repeatedEnablesIds.includes(m.id))  el.classList.add('enables-dup');
+  }
+
+  const isComp = course.compulsory.has(m.id);
+  el.innerHTML = `
+    <div class="mod-code">${m.code}${isComp ? ' ★' : ''}</div>
+    <div class="mod-name">${m.name}</div>
+  `;
+
+  el.addEventListener('click', () => {
+    if (selected === m.id) {
+      window.location.href = modulePagePath(m.code);
+    } else {
+      selectModule(m.id, getCourseModules());
+    }
+  });
+  return el;
+}
+
 function render() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
 
   const mods = getCourseModules();
   const course = COURSES[currentCourse];
+  const hasYear4 = currentCourse === 'mmaths';
 
   let prereqIds = [], repeatedPrereqIds = [], enablesIds = [], repeatedEnablesIds = [];
   if (selected) {
@@ -112,49 +153,143 @@ function render() {
     repeatedEnablesIds = getRepeatedEnables(selected, mods);
   }
 
-  SEMESTERS.forEach((sem, si) => {
-    const semMods = mods.filter(m => m.sem === si);
-    if (!semMods.length) { grid.appendChild(document.createElement('div')); return; }
-
-    const col = document.createElement('div');
-    col.className = 'semester-col';
-
-    const hdr = document.createElement('div');
-    hdr.className = 'sem-header';
-    hdr.textContent = sem;
-    col.appendChild(hdr);
-
-    semMods.forEach(m => {
-      const el = document.createElement('div');
-      el.className = 'module-card';
-
-      if (selected) {
-        if (m.id === selected)                       el.classList.add('selected');
-        else if (prereqIds.includes(m.id))           el.classList.add('prereq');
-        else if (repeatedPrereqIds.includes(m.id))   el.classList.add('prereq-dup');
-        else if (enablesIds.includes(m.id))          el.classList.add('enables');
-        else if (repeatedEnablesIds.includes(m.id))  el.classList.add('enables-dup');
-      }
-
-      const isComp = course.compulsory.has(m.id);
-      el.innerHTML = `
-        <div class="mod-code">${m.code}${isComp ? ' ★' : ''}</div>
-        <div class="mod-name">${m.name}</div>
-      `;
-
-      el.addEventListener('click', () => {
-        if (selected === m.id) {
-          // Already selected → navigate to module page
-          window.location.href = modulePagePath(m.code);
-        } else {
-          selectModule(m.id, mods);
-        }
-      });
-
-      col.appendChild(el);
+  function sortMods(modList) {
+    return [...modList].sort((a, b) => {
+      const ac = course.compulsory.has(a.id) ? 0 : 1;
+      const bc = course.compulsory.has(b.id) ? 0 : 1;
+      return ac - bc;
     });
+  }
 
-    grid.appendChild(col);
+  // Year groups: each has two semester indices and an optional full-year sem index
+  const yearGroups = [
+    { sems: [0, 1] },
+    { sems: [2, 3] },
+    { sems: [4, 5], fullYear: 6 },
+    ...(hasYear4 ? [{ sems: [7, 8], fullYear: 9 }] : [])
+  ];
+
+  // Each year group gets its own 2-column sub-grid wrapper so full-year
+  // cards sit at the top of that group and only stretch to their natural height.
+  grid.style.gridTemplateColumns = `repeat(${yearGroups.length}, 1fr 1fr)`;
+
+  yearGroups.forEach(({ sems, fullYear }) => {
+    const fyMods = fullYear !== undefined ? sortMods(mods.filter(m => m.sem === fullYear)) : [];
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'year-group';
+    wrapper.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; column-gap:10px; row-gap:8px; grid-column:span 2; align-items:start;';
+
+    if (!fyMods.length) {
+      // Years 1 & 2: no full-year modules — simple flex columns, no gaps
+      sems.forEach(semIdx => {
+        const col = document.createElement('div');
+        col.className = 'semester-col';
+        const hdr = document.createElement('div');
+        hdr.className = 'sem-header';
+        hdr.textContent = SEM_LABELS[semIdx];
+        col.appendChild(hdr);
+        sortMods(mods.filter(m => m.sem === semIdx)).forEach(m => {
+          col.appendChild(buildModuleCard(m, course, prereqIds, repeatedPrereqIds, enablesIds, repeatedEnablesIds));
+        });
+        wrapper.appendChild(col);
+      });
+    } else {
+      // Years 3 & 4: has full-year modules.
+      //
+      // fyAtTop  = true  → maths/mmaths/phil/Y4: no compulsory mods in this year block,
+      //                     project leads; flex columns used so no gaps.
+      // fyAtTop  = false → stats/finance Y3: project must sit after compulsory mods in
+      //                     both columns; slot-based grid placement used to interleave it.
+      const sem1CompCount = mods.filter(m => m.sem === sems[0] && course.compulsory.has(m.id)).length;
+      const sem2CompCount = mods.filter(m => m.sem === sems[1] && course.compulsory.has(m.id)).length;
+      const fyAllComp = fyMods.every(m => course.compulsory.has(m.id));
+      const fyAtTop   = fyAllComp || (sem1CompCount === 0 && sem2CompCount === 0);
+
+      if (fyAtTop) {
+        // Switch wrapper to flex-column so rows stack tightly with no grid gaps.
+        // Structure: hdrRow (2 headers side by side) → fyRow (spanning) → cardsRow (2 cols).
+        wrapper.style.cssText = 'display:flex; flex-direction:column; gap:8px; grid-column:span 2;';
+
+        // Row 1: the two semester headers side by side
+        const hdrRow = document.createElement('div');
+        hdrRow.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; column-gap:10px;';
+        sems.forEach(semIdx => {
+          const hdr = document.createElement('div');
+          hdr.className = 'sem-header';
+          hdr.textContent = SEM_LABELS[semIdx];
+          hdrRow.appendChild(hdr);
+        });
+        wrapper.appendChild(hdrRow);
+
+        // Row 2: full-year spanning card
+        const fyRow = document.createElement('div');
+        fyRow.style.cssText = 'display:flex; flex-direction:column; gap:8px;';
+        fyMods.forEach(m => {
+          fyRow.appendChild(buildModuleCard(m, course, prereqIds, repeatedPrereqIds, enablesIds, repeatedEnablesIds));
+        });
+        wrapper.appendChild(fyRow);
+
+        // Row 3+: the two semester card-columns side by side (no header, already rendered)
+        const cardsRow = document.createElement('div');
+        cardsRow.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; column-gap:10px; row-gap:8px; align-items:start;';
+        sems.forEach(semIdx => {
+          const col = document.createElement('div');
+          col.className = 'semester-col';
+          sortMods(mods.filter(m => m.sem === semIdx)).forEach(m => {
+            col.appendChild(buildModuleCard(m, course, prereqIds, repeatedPrereqIds, enablesIds, repeatedEnablesIds));
+          });
+          cardsRow.appendChild(col);
+        });
+        wrapper.appendChild(cardsRow);
+      } else {
+        // stats/finance: project must appear after compulsory mods in both columns.
+        // Use explicit CSS grid placement so the spanning row can be injected mid-stream.
+        const fySlot = Math.max(sem1CompCount, sem2CompCount);
+
+        sems.forEach((semIdx, colIdx) => {
+          const hdr = document.createElement('div');
+          hdr.className = 'sem-header';
+          hdr.textContent = SEM_LABELS[semIdx];
+          hdr.style.gridColumn = String(colIdx + 1);
+          wrapper.appendChild(hdr);
+        });
+
+        const colMods  = sems.map(semIdx => sortMods(mods.filter(m => m.sem === semIdx)));
+        const maxSlots = Math.max(colMods[0].length, colMods[1].length);
+        let fyInjected = false;
+
+        for (let slot = 0; slot <= maxSlots; slot++) {
+          if (!fyInjected && slot === fySlot) {
+            fyInjected = true;
+            const fyRow = document.createElement('div');
+            fyRow.style.cssText = 'grid-column:1 / -1; display:flex; flex-direction:column; gap:8px;';
+            fyMods.forEach(m => {
+              fyRow.appendChild(buildModuleCard(m, course, prereqIds, repeatedPrereqIds, enablesIds, repeatedEnablesIds));
+            });
+            wrapper.appendChild(fyRow);
+          }
+          colMods.forEach((mList, colIdx) => {
+            if (slot < mList.length) {
+              const cardEl = buildModuleCard(mList[slot], course, prereqIds, repeatedPrereqIds, enablesIds, repeatedEnablesIds);
+              cardEl.style.gridColumn = String(colIdx + 1);
+              wrapper.appendChild(cardEl);
+            }
+          });
+          if (slot >= maxSlots) break;
+        }
+        if (!fyInjected) {
+          const fyRow = document.createElement('div');
+          fyRow.style.cssText = 'grid-column:1 / -1; display:flex; flex-direction:column; gap:8px;';
+          fyMods.forEach(m => {
+            fyRow.appendChild(buildModuleCard(m, course, prereqIds, repeatedPrereqIds, enablesIds, repeatedEnablesIds));
+          });
+          wrapper.appendChild(fyRow);
+        }
+      }
+    }
+
+    grid.appendChild(wrapper);
   });
 }
 
