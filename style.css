@@ -1,26 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #f8f7fc;
+  --bg: #f7f9fc;
   --surface: #ffffff;
-  --surface2: #f2f0f8;
-  --border: #e4e0f0;
-  --border2: #d0cbe8;
-  --purple: #7c5cbf;
-  --purple-light: #9b7dd4;
+  --surface2: #f0f3f8;
+  --border: #e0e7f0;
+  --border2: #cbd7e8;
+  --purple: #3a8fd4; 
+  --purple-light: #7d9bd4;
+  --purple-dim: #e9ebf8;
+  --purple-xdim: #f3f5fc;
+  --text: #151e25;
+  --text2: #424960;
+  --text3: #7f91a8; 
+  /* 
+  Original Purple Theme
+  --purple: #7c5cbf; 
+  --purple-light: #9b7dd4; 
   --purple-dim: #ede9f8;
   --purple-xdim: #f5f3fc;
   --text: #1a1525;
   --text2: #4a4260;
-  --text3: #8a7fa8;
+  --text3: #8a7fa8; 
+  */
   --mono: 'JetBrains Mono', monospace;
   --sans: 'DM Sans', sans-serif;
   --display: 'Syne', sans-serif;
   --sidebar-w: 220px;
   --radius: 10px;
   --radius-sm: 6px;
-  --shadow: 0 1px 3px rgba(80,60,140,0.08), 0 4px 16px rgba(80,60,140,0.06);
-  --shadow-sm: 0 1px 3px rgba(80,60,140,0.08);
+  --shadow: 0 1px 3px rgba(60, 80, 140, 0.08), 0 4px 16px rgba(80,60,140,0.06);
+  --shadow-sm: 0 1px 3px rgba(60, 89, 140, 0.08);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
