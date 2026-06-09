@@ -274,6 +274,7 @@ html, body {
 .tag-level1 { background: #eef6e8; color: #3a7a10; border: 1px solid #c4e0a8; }
 .tag-level2 { background: #e8f0fb; color: #2455a0; border: 1px solid #b0c8f0; }
 .tag-level3 { background: #f3eafb; color: #6a2fa0; border: 1px solid #d0b0f0; }
+.tag-level4 { background: #fbeaea; color: #a02f2f; border: 1px solid #f0b0b0; }
 .tag-compulsory { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--border2); }
 .tag-optional { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
 
