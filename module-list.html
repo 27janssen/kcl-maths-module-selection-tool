@@ -26,17 +26,32 @@
 
 <script src="modules-data.js"></script>
 <script>
-const SEM_NAMES = ["Year 1 · Sem 1","Year 1 · Sem 2","Year 2 · Sem 1","Year 2 · Sem 2","Year 3 · Sem 1","Year 3 · Sem 2"];
+// sem index → display label (sem:6 = Y3 both sems, sem:9 = Y4 both sems)
+const SEM_NAMES = {
+  0: "Year 1 · Sem 1",
+  1: "Year 1 · Sem 2",
+  2: "Year 2 · Sem 1",
+  3: "Year 2 · Sem 2",
+  4: "Year 3 · Sem 1",
+  5: "Year 3 · Sem 2",
+  6: "Year 3 · Both Semesters",
+  7: "Year 4 · Sem 1",
+  8: "Year 4 · Sem 2",
+  9: "Year 4 · Both Semesters"
+};
 
-const COMPULSORY_CODES = new Set([
-  "4CCM111A","4CCM113A","4CCM115A","4CCM121A",
-  "4CCM112A","4CCM114A","4CCM131A","4CCM141A",
-  "5CCM221A"
-]);
+// Display order within each level
+const SEM_ORDER = {
+  4: [0, 1],
+  5: [2, 3],
+  6: [4, 5, 6],
+  7: [7, 8, 9]
+};
 
-const levels = [4,5,6];
-const levelLabels = { 4: "Level 4 — Year 1", 5: "Level 5 — Year 2", 6: "Level 6 — Year 3" };
-const levelTagClass = { 4: "tag-level1", 5: "tag-level2", 6: "tag-level3" };
+const COMPULSORY_CODES = new Set([])
+const levels = [4,5,6,7];
+const levelLabels = { 4: "Level 4 — Year 1", 5: "Level 5 — Year 2", 6: "Level 6 — Year 3", 7: "Level 7 — Year 4"};
+const levelTagClass = { 4: "tag-level1", 5: "tag-level2", 6: "tag-level3", 7: "tag-level4"};
 
 const container = document.getElementById('module-list-container');
 
@@ -58,25 +73,27 @@ levels.forEach(lv => {
   card.className = 'card';
   card.style.padding = '8px';
 
-  // Group by semester
+  // Group by semester, then display in defined order
   const semGroups = {};
   mods.forEach(m => {
     if (!semGroups[m.sem]) semGroups[m.sem] = [];
     semGroups[m.sem].push(m);
   });
 
-  Object.entries(semGroups).forEach(([sem, semMods]) => {
+  SEM_ORDER[lv].forEach(sem => {
+    const semMods = semGroups[sem];
+    if (!semMods || !semMods.length) return;
+
     const semLabel = document.createElement('div');
     semLabel.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;padding:12px 8px 6px;';
-    semLabel.textContent = SEM_NAMES[+sem];
+
+    semLabel.textContent = SEM_NAMES[sem];
     card.appendChild(semLabel);
 
     semMods.forEach(m => {
       const a = document.createElement('a');
       a.href = modulePagePath(m.code);
       a.className = 'module-list-item';
-
-      const isComp = COMPULSORY_CODES.has(m.code);
 
       a.innerHTML = `
         <span class="module-list-code">${m.code}</span>
