@@ -1,6 +1,6 @@
 // sidebar.js — inject sidebar into any page
 // Usage: <script src="../sidebar.js"></script> or <script src="sidebar.js"></script>
-// Call: renderSidebar('home' | 'selection' | 'modules' | 'about')
+// Call: renderSidebar('home' | 'selection' | 'modules' | 'builder' | 'about')
 
 function renderSidebar(activeKey, rootPath) {
   rootPath = rootPath || '';
@@ -8,6 +8,7 @@ function renderSidebar(activeKey, rootPath) {
     { key: 'home',      label: 'Home',             icon: '~/',   href: rootPath + 'index.html' },
     { key: 'selection', label: 'Module Selection',  icon: '[]',   href: rootPath + 'selection.html' },
     { key: 'modules',   label: 'Module List',       icon: '::',   href: rootPath + 'module-list.html' },
+    { key: 'builder',   label: 'Module Builder',    icon: '+/',   href: rootPath + 'builder.html' },
     { key: 'about',     label: 'About',             icon: '/>',   href: rootPath + 'about.html' },
   ];
 
@@ -33,6 +34,5 @@ function renderSidebar(activeKey, rootPath) {
     </aside>
   `;
 
-  // Insert before first child of body
   document.body.insertAdjacentHTML('afterbegin', html);
 }
