@@ -232,9 +232,48 @@ function getCourseModules() {
 // ── PREREQ CHECK ──────────────────────────────────────────────────────────────
 // FIX: modules in the same semester count as valid prerequisites
 // (a compulsory co-req in the same sem is effectively available)
+//
+// FIX (caveat across all courses): each entry in m.prereqs may have a corresponding
+// "joint honours" / alternate-stream equivalent in m.repeatedPrereqs (matched by name,
+// e.g. "Linear Algebra & Geometry II" <-> "Linear Algebra & Geometry II for Joint Honours").
+// repeatedPrereqs is NOT a separate all-or-nothing alternate bundle — each substitute only
+// covers the ONE prereq it is equivalent to. So every prereq is checked individually:
+// satisfied directly, satisfied via its substitute, or (if neither the prereq nor any
+// substitute is ever offered on the current course) waived, since a course can't enforce
+// a requirement it has no way of letting a student fulfill.
+function findSubstituteIds(prereqId) {
+  const baseName = (id) => {
+    const mod = getModule(id);
+    return mod ? mod.name.replace(/ for Joint Honours$/, '').trim() : '';
+  };
+  const targetName = baseName(prereqId);
+  if (!targetName) return [];
+  return ALL_MODULES
+    .filter(mod => mod.id !== prereqId && baseName(mod.id) === targetName)
+    .map(mod => mod.id);
+}
+
+function isPrereqSatisfied(prereqId, acquired, offeredIds) {
+  const offeredDirectly = offeredIds.has(prereqId);
+  if (offeredDirectly) return acquired.has(prereqId);
+
+  // Not offered on this course — look for a same-subject substitute (e.g. JH version)
+  const subs = findSubstituteIds(prereqId);
+  const offeredSubs = subs.filter(s => offeredIds.has(s));
+
+  if (offeredSubs.length === 0) {
+    // Neither the prereq nor any equivalent is ever offered on this course —
+    // the department doesn't ask this course's students to take it, so waive it.
+    return true;
+  }
+  // Satisfied if any offered substitute has been acquired
+  return offeredSubs.some(s => acquired.has(s));
+}
+
 function hasPrereqs(m, targetSem) {
   const acquired = new Set();
   const def = COURSE_DEFS[currentCourse];
+  const offeredIds = new Set(def.ids);
   const semOrder = def.hasY4 ? [0,1,2,3,4,5,7,8] : [0,1,2,3,4,5];
 
   for (const sem of semOrder) {
@@ -250,11 +289,9 @@ function hasPrereqs(m, targetSem) {
     }
   }
 
-  if (m.prereqs.length === 0 && m.repeatedPrereqs.length === 0) return true;
+  if (m.prereqs.length === 0) return true;
 
-  const primaryOk = m.prereqs.length === 0 || m.prereqs.every(pid => acquired.has(pid));
-  const repeatOk  = m.repeatedPrereqs.length > 0 && m.repeatedPrereqs.every(pid => acquired.has(pid));
-  return primaryOk || repeatOk;
+  return m.prereqs.every(pid => isPrereqSatisfied(pid, acquired, offeredIds));
 }
 
 // ── AVAILABLE MODULES FOR SLOT ────────────────────────────────────────────────
