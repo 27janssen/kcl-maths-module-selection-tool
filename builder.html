@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module Builder · KCL Maths</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .builder-slot.drag-over {
+    border: 2px dashed var(--purple) !important;
+    background: var(--surface2) !important;
+    opacity: 1 !important;
+  }
+  .builder-slot[draggable="true"] {
+    cursor: grab;
+  }
+  .builder-slot[draggable="true"]:active {
+    cursor: grabbing;
+  }
+  .builder-slot.dragging {
+    opacity: 0.4;
+  }
+  .drag-hint {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--purple);
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+    padding: 0 2px;
+    opacity: 0.75;
+  }
+</style>
+</head>
+<body>
+<div class="site-wrapper">
+  <script src="sidebar.js"></script>
+  <script>renderSidebar('builder');</script>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="page-eyebrow">Planner</div>
+      <h1 class="page-title">Module Builder</h1>
+      <div class="page-subtitle">This tool is still in the works! Expect some modules to not appear correctly or atall.</div>
+    </div>
+
+    <div class="page-body">
+      <div class="pill-nav" id="course-tabs"></div>
+      <div class="builder-grid" id="builder-grid"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Module picker modal -->
+<div class="modal-backdrop" id="modal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">Pick a Module</div>
+        <div class="modal-subtitle" id="modal-subtitle"></div>
+      </div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="modal-search" placeholder="Search modules..." autocomplete="off">
+    </div>
+    <div class="modal-list" id="modal-list"></div>
+  </div>
+</div>
+
+<script src="modules-data.js"></script>
+<script>
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+const TYP_ID  = 'm100';
+const MSCI_ID = 'm101';
+
+// ── COURSE DEFINITIONS ───────────────────────────────────────────────────────
+const COURSE_DEFS = {
+  maths: {
+    label: 'BSc Mathematics',
+    compulsory: new Set(["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m15","m16"]),
+    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m32","m33","m34","m35","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51","m100"],
+    slotsPerSem: { 0: 'comp', 1: 'comp', 2: 4, 3: 4, 4: 4, 5: 4 },
+    hasY4: false,
+    adjustable: null,
+    // Y2 draggable pool: { totalOptional, sems }
+    y2Draggable: null
+  },
+  mmaths: {
+    label: 'MSci Mathematics',
+    compulsory: new Set(["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m15","m16","m101"]),
+    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m32","m33","m34","m35","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51","m100","m53","m54","m55","m56","m67","m57","m58","m59","m60","m61","m62","m63","m64","m65","m79","m80","m81","m82","m83","m84","m85","m87","m88","m89","m90","m91","m93","m94","m96","m97","m98","m99","m101"],
+    slotsPerSem: { 0: 'comp', 1: 'comp', 2: 4, 3: 4, 4: 4, 5: 4, 7: 4, 8: 4 },
+    hasY4: true,
+    adjustable: null,
+    y2Draggable: null
+  },
+  stats: {
+    label: 'BSc Mathematics with Statistics',
+    compulsory: new Set(["m1","m2","m3","m4","m5","m6","m7","m8","m9","m13","m20","m36","m49","m50"]),
+    ids: ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","m22","m26","m27","m28","m29","m30","m31","m33","m34","m36","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m49","m50","m51","m52","m100"],
+    slotsPerSem: { 0: 'comp', 1: 'comp', 2: 4, 3: 4, 4: 4, 5: 4 },
+    hasY4: false,
+    adjustable: null,
+    y2Draggable: null
+  },
+  finance: {
+    label: 'BSc Maths with Management & Finance',
+    compulsory: new Set(["m1","m2","m3","m5","m7","m8","m9","m24","m25","m15","m31","m42"]),
+    ids: ["m1","m2","m3","m5","m7","m8","m9","m24","m10","m11","m12","m13","m14","m25","m15","m16","m17","m20","m21","m22","m31","m26","m27","m28","m29","m30","m33","m34","m35","m36","m37","m38","m42","m39","m40","m41","m43","m44","m45","m47","m48","m49","m50","m51","m52","m100"],
+    slotsPerSem: { 0: 'comp', 1: 'comp', 2: null, 3: null, 4: null, 5: null },
+    hasY4: false,
+    adjustable: { sems: [4, 5], minTotal: 3, maxTotal: 5, startTotal: 3 },
+    // 2 optional modules can be freely distributed across sems 2 & 3
+    y2Draggable: { sems: [2, 3], totalOptional: 2 }
+  },
+  phil: {
+    label: 'BSc Mathematics & Philosophy',
+    compulsory: new Set(["m1","m2","m3","m5","m7","m9","m24","m25"]),
+    ids: ["m1","m2","m3","m5","m7","m9","m24","m10","m12","m14","m25","m15","m16","m18","m19","m21","m23","m26","m27","m28","m30","m31","m33","m34","m35","m37","m38","m39","m40","m41","m42","m43","m44","m45","m46","m47","m48","m51","m52","m100"],
+    slotsPerSem: { 0: 'comp', 1: 'comp', 2: null, 3: null, 4: null, 5: null },
+    hasY4: false,
+    adjustable: { sems: [4, 5], minTotal: 3, maxTotal: 5, startTotal: 3 },
+    // 1 optional module can be freely placed in sem 2 or sem 3
+    y2Draggable: { sems: [2, 3], totalOptional: 1 }
+  }
+};
+
+const SEM_LABELS = {
+  0: "Year 1 · Sem 1", 1: "Year 1 · Sem 2",
+  2: "Year 2 · Sem 1", 3: "Year 2 · Sem 2",
+  4: "Year 3 · Sem 1", 5: "Year 3 · Sem 2",
+  7: "Year 4 · Sem 1", 8: "Year 4 · Sem 2"
+};
+
+const YEAR_LABELS = { 4: 'Year 1', 5: 'Year 2', 6: 'Year 3', 7: 'Year 4' };
+
+const YEAR_SEMS = {
+  4: [0, 1],
+  5: [2, 3],
+  6: [4, 5],
+  7: [7, 8]
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentCourse = 'maths';
+let build = {};
+let adjustableState = { sem4Slots: 2, sem5Slots: 1 };
+// For y2Draggable courses: track how many optional slots are in each sem
+let y2DraggableState = { sem2Slots: 0, sem3Slots: 0 };
+let modalTarget = null;
+
+// Drag state
+let dragInfo = null; // { sem, idx, modId }
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function initBuild() {
+  const def = COURSE_DEFS[currentCourse];
+  build = {};
+
+  const allSems = def.hasY4 ? [0,1,2,3,4,5,7,8] : [0,1,2,3,4,5];
+
+  if (def.adjustable) {
+    const s = def.adjustable.startTotal;
+    adjustableState = { sem4Slots: Math.ceil(s / 2), sem5Slots: Math.floor(s / 2) };
+  }
+
+  // Init y2Draggable state
+  if (def.y2Draggable) {
+    const total = def.y2Draggable.totalOptional;
+    y2DraggableState = { sem2Slots: Math.ceil(total / 2), sem3Slots: Math.floor(total / 2) };
+  }
+
+  allSems.forEach(sem => {
+    const compMods = getCourseModules()
+      .filter(m => m.sem === sem && def.compulsory.has(m.id))
+      .map(m => m.id);
+
+    const spec = def.slotsPerSem[sem];
+
+    if (spec === 'comp') {
+      build[sem] = [...compMods];
+    } else if (spec === null) {
+      // Will be handled below for adjustable / y2Draggable
+      build[sem] = [...compMods];
+    } else {
+      const slots = [...compMods];
+      const empties = spec - compMods.length;
+      for (let i = 0; i < Math.max(0, empties); i++) slots.push(null);
+      build[sem] = slots;
+    }
+  });
+
+  // Handle y2Draggable
+  if (def.y2Draggable) {
+    const [s1, s2] = def.y2Draggable.sems;
+    const s1Comp = getCourseModules().filter(m => m.sem === s1 && def.compulsory.has(m.id)).map(m => m.id);
+    const s2Comp = getCourseModules().filter(m => m.sem === s2 && def.compulsory.has(m.id)).map(m => m.id);
+    build[s1] = [...s1Comp];
+    build[s2] = [...s2Comp];
+    for (let i = 0; i < y2DraggableState.sem2Slots; i++) build[s1].push(null);
+    for (let i = 0; i < y2DraggableState.sem3Slots; i++) build[s2].push(null);
+  }
+
+  // Handle adjustable Y3 sems
+  if (def.adjustable) {
+    const s1 = def.adjustable.sems[0];
+    const s2 = def.adjustable.sems[1];
+    const s1Comp = getCourseModules().filter(m => m.sem === s1 && def.compulsory.has(m.id)).map(m => m.id);
+    const s2Comp = getCourseModules().filter(m => m.sem === s2 && def.compulsory.has(m.id)).map(m => m.id);
+    const half1 = adjustableState.sem4Slots;
+    const half2 = adjustableState.sem5Slots;
+    build[s1] = [...s1Comp];
+    for (let i = 0; i < Math.max(0, half1 - s1Comp.length); i++) build[s1].push(null);
+    build[s2] = [...s2Comp];
+    for (let i = 0; i < Math.max(0, half2 - s2Comp.length); i++) build[s2].push(null);
+  }
+
+  // MSci Project
+  if (def.hasY4 && def.compulsory.has(MSCI_ID)) {
+    if (!build[7]) build[7] = [];
+    if (!build[8]) build[8] = [];
+    if (!build[7].includes('MSCI_FIRST'))  build[7].unshift('MSCI_FIRST');
+    if (!build[8].includes('MSCI_SECOND')) build[8].unshift('MSCI_SECOND');
+  }
+}
+
+function getCourseModules() {
+  const def = COURSE_DEFS[currentCourse];
+  return ALL_MODULES.filter(m => def.ids.includes(m.id));
+}
+
+// ── PREREQ CHECK ──────────────────────────────────────────────────────────────
+// FIX: modules in the same semester count as valid prerequisites
+// (a compulsory co-req in the same sem is effectively available)
+function hasPrereqs(m, targetSem) {
+  const acquired = new Set();
+  const def = COURSE_DEFS[currentCourse];
+  const semOrder = def.hasY4 ? [0,1,2,3,4,5,7,8] : [0,1,2,3,4,5];
+
+  for (const sem of semOrder) {
+    if (sem > targetSem) break;
+    (build[sem] || []).forEach(id => {
+      if (id && !id.startsWith('TYP_') && !id.startsWith('MSCI_')) acquired.add(id);
+    });
+    // Also include same-semester compulsory modules as automatically available
+    if (sem === targetSem) {
+      getCourseModules()
+        .filter(mod => mod.sem === sem && def.compulsory.has(mod.id))
+        .forEach(mod => acquired.add(mod.id));
+    }
+  }
+
+  if (m.prereqs.length === 0 && m.repeatedPrereqs.length === 0) return true;
+
+  const primaryOk = m.prereqs.length === 0 || m.prereqs.every(pid => acquired.has(pid));
+  const repeatOk  = m.repeatedPrereqs.length > 0 && m.repeatedPrereqs.every(pid => acquired.has(pid));
+  return primaryOk || repeatOk;
+}
+
+// ── AVAILABLE MODULES FOR SLOT ────────────────────────────────────────────────
+function getAvailableForSlot(sem) {
+  const def = COURSE_DEFS[currentCourse];
+  const courseMods = getCourseModules();
+
+  const inBuild = new Set();
+  Object.values(build).forEach(slots =>
+    slots.forEach(id => {
+      if (id && !id.startsWith('TYP_') && !id.startsWith('MSCI_')) inBuild.add(id);
+    })
+  );
+
+  const typPlaced = Object.values(build).some(slots =>
+    slots.some(id => id === TYP_ID || id === 'TYP_FIRST' || id === 'TYP_SECOND')
+  );
+
+  return courseMods.filter(m => {
+    if (def.compulsory.has(m.id)) return false;
+    if (inBuild.has(m.id)) return false;
+
+    if (m.id === TYP_ID) {
+      return !typPlaced && (sem === 4 || sem === 5);
+    }
+
+    if (m.sem !== sem) return false;
+    return hasPrereqs(m, sem);
+  });
+}
+
+// ── Y2 DRAGGABLE HELPERS ──────────────────────────────────────────────────────
+function isY2DraggableSem(sem) {
+  const def = COURSE_DEFS[currentCourse];
+  return def.y2Draggable && def.y2Draggable.sems.includes(sem);
+}
+
+function getY2OptionalSlots(sem) {
+  return sem === 2 ? y2DraggableState.sem2Slots : y2DraggableState.sem3Slots;
+}
+
+function setY2OptionalSlots(sem, count) {
+  if (sem === 2) y2DraggableState.sem2Slots = count;
+  else y2DraggableState.sem3Slots = count;
+}
+
+// Move an optional module (or empty slot) from one y2 sem to another
+function moveSlotToSem(fromSem, fromIdx, toSem) {
+  const def = COURSE_DEFS[currentCourse];
+  const movedId = build[fromSem][fromIdx];
+
+  // Remove the slot from source sem
+  build[fromSem].splice(fromIdx, 1);
+  setY2OptionalSlots(fromSem, getY2OptionalSlots(fromSem) - 1);
+
+  // If the moved module now has no prereqs in the target sem context, place as null
+  let placedId = movedId;
+  if (movedId && !movedId.startsWith('TYP_') && !movedId.startsWith('MSCI_')) {
+    const mod = ALL_MODULES.find(m => m.id === movedId);
+    if (mod && !hasPrereqs(mod, toSem)) {
+      placedId = null; // prereqs not met in destination, clear it
+    }
+  }
+
+  // Add slot to destination sem
+  build[toSem].push(placedId);
+  setY2OptionalSlots(toSem, getY2OptionalSlots(toSem) + 1);
+
+  render();
+}
+
+// ── ADJUSTABLE HELPERS ────────────────────────────────────────────────────────
+function getAdjustableTotal() {
+  return adjustableState.sem4Slots + adjustableState.sem5Slots;
+}
+
+function countComp(sem) {
+  const def = COURSE_DEFS[currentCourse];
+  return (build[sem] || []).filter(id => id && def.compulsory.has(id)).length;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  const grid = document.getElementById('builder-grid');
+  grid.innerHTML = '';
+
+  const def = COURSE_DEFS[currentCourse];
+  const years = def.hasY4 ? [4, 5, 6, 7] : [4, 5, 6];
+
+  years.forEach(yr => {
+    const yearEl = document.createElement('div');
+    yearEl.className = 'builder-year';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'builder-year-label';
+    lbl.innerHTML = `${YEAR_LABELS[yr]} <span class="tag tag-level${yr - 3}">${yr === 4 ? 'Level 4' : yr === 5 ? 'Level 5' : yr === 6 ? 'Level 6' : 'Level 7'}</span>`;
+    yearEl.appendChild(lbl);
+
+    const semsEl = document.createElement('div');
+    semsEl.className = 'builder-sems';
+
+    const sems = YEAR_SEMS[yr];
+
+    const row = document.createElement('div');
+    row.className = 'builder-two-col';
+    sems.forEach(sem => row.appendChild(renderSemBlock(sem, def)));
+    semsEl.appendChild(row);
+
+    yearEl.appendChild(semsEl);
+    grid.appendChild(yearEl);
+  });
+}
+
+function renderSemBlock(sem, def) {
+  const block = document.createElement('div');
+  block.className = 'builder-sem';
+
+  const header = document.createElement('div');
+  header.className = 'builder-sem-header';
+  header.textContent = SEM_LABELS[sem];
+  block.appendChild(header);
+
+  const slots = build[sem] || [];
+  const slotsEl = document.createElement('div');
+  slotsEl.className = 'builder-slots';
+
+  // Make the slots container a drop zone for y2Draggable sems
+  if (isY2DraggableSem(sem)) {
+    slotsEl.addEventListener('dragover', (e) => {
+      if (!dragInfo) return;
+      const otherSem = def.y2Draggable.sems.find(s => s !== sem);
+      if (dragInfo.sem !== otherSem) return; // only accept drags from the other y2 sem
+      e.preventDefault();
+      slotsEl.classList.add('drag-over');
+    });
+    slotsEl.addEventListener('dragleave', () => slotsEl.classList.remove('drag-over'));
+    slotsEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      slotsEl.classList.remove('drag-over');
+      if (!dragInfo) return;
+      const otherSem = def.y2Draggable.sems.find(s => s !== sem);
+      if (dragInfo.sem !== otherSem) return;
+      moveSlotToSem(dragInfo.sem, dragInfo.idx, sem);
+      dragInfo = null;
+    });
+  }
+
+  slots.forEach((id, idx) => {
+    slotsEl.appendChild(buildSlotEl(id, idx, sem, def));
+  });
+
+  block.appendChild(slotsEl);
+
+  // Add/remove controls for adjustable Y3 sems
+  if (def.adjustable && def.adjustable.sems.includes(sem)) {
+    const total   = getAdjustableTotal();
+    const canAdd  = total < def.adjustable.maxTotal;
+    const lastIsEmpty = slots[slots.length - 1] === null;
+    const canRemove   = total > def.adjustable.minTotal && lastIsEmpty && slots.length > countComp(sem);
+
+    const controls = document.createElement('div');
+    controls.className = 'sem-slot-controls';
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'slot-add-btn';
+    addBtn.textContent = '+ Add optional slot';
+    addBtn.disabled = !canAdd;
+    addBtn.addEventListener('click', () => {
+      if (sem === def.adjustable.sems[0]) adjustableState.sem4Slots++;
+      else adjustableState.sem5Slots++;
+      build[sem].push(null);
+      render();
+    });
+
+    const rmBtn = document.createElement('button');
+    rmBtn.className = 'slot-rm-btn';
+    rmBtn.textContent = '− Remove optional slot';
+    rmBtn.disabled = !canRemove;
+    rmBtn.addEventListener('click', () => {
+      if (sem === def.adjustable.sems[0]) adjustableState.sem4Slots--;
+      else adjustableState.sem5Slots--;
+      build[sem].pop();
+      render();
+    });
+
+    controls.appendChild(addBtn);
+    controls.appendChild(rmBtn);
+    block.appendChild(controls);
+  }
+
+  // Drag hint for y2Draggable sems
+  if (isY2DraggableSem(sem)) {
+    const hint = document.createElement('div');
+    hint.className = 'drag-hint';
+    hint.textContent = '⠿ Drag optional modules between semesters';
+    block.appendChild(hint);
+  }
+
+  return block;
+}
+
+function buildSlotEl(id, idx, sem, def) {
+  const el = document.createElement('div');
+
+  // ── MSci Project placeholders ──────────────────────────────────────────────
+  if (id === 'MSCI_FIRST' || id === 'MSCI_SECOND') {
+    const half = id === 'MSCI_FIRST' ? '(First Half)' : '(Second Half)';
+    el.className = 'builder-slot compulsory';
+    el.innerHTML = `
+      <div class="slot-code">7CCM461A</div>
+      <div class="slot-name">MSci Project <span style="font-size:10px;color:var(--purple);font-family:var(--mono);">${half}</span></div>
+      <span class="slot-badge compulsory">★ COMPULSORY</span>
+    `;
+    return el;
+  }
+
+  // ── Third Year Project placeholders ───────────────────────────────────────
+  if (id === 'TYP_FIRST' || id === 'TYP_SECOND') {
+    const half = id === 'TYP_FIRST' ? '(First Half)' : '(Second Half)';
+    el.className = 'builder-slot filled';
+    el.innerHTML = `
+      <div class="slot-code">6CCM345A</div>
+      <div class="slot-name">Third Year Project <span style="font-size:10px;color:#3B6D11;font-family:var(--mono);">${half}</span></div>
+      <span class="slot-badge optional">OPTIONAL</span>
+      <button class="slot-remove" title="Remove Third Year Project">✕</button>
+    `;
+    el.querySelector('.slot-remove').addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeThirdYearProject();
+    });
+    return el;
+  }
+
+  // ── Real module ────────────────────────────────────────────────────────────
+  const mod    = id ? ALL_MODULES.find(m => m.id === id) : null;
+  const isComp = id ? def.compulsory.has(id) : false;
+  const isDraggableSlot = isY2DraggableSem(sem) && !isComp;
+
+  if (!id) {
+    el.className = 'builder-slot empty';
+    el.innerHTML = `
+      <span class="slot-plus-icon">+</span>
+      <div class="slot-code"></div>
+      <div class="slot-name empty-slot-label">Click to pick a module</div>
+    `;
+    el.addEventListener('click', () => openModal(sem, idx));
+
+    // Empty optional slots in y2Draggable sems are also draggable
+    if (isDraggableSlot) {
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', (e) => {
+        dragInfo = { sem, idx, modId: null };
+        el.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    }
+  } else if (isComp) {
+    el.className = 'builder-slot compulsory';
+    el.innerHTML = `
+      <div class="slot-code">${mod.code}</div>
+      <div class="slot-name">${mod.name}</div>
+      <span class="slot-badge compulsory">★ COMPULSORY</span>
+    `;
+  } else {
+    el.className = 'builder-slot filled';
+    el.innerHTML = `
+      <div class="slot-code">${mod.code}</div>
+      <div class="slot-name">${mod.name}</div>
+      <span class="slot-badge optional">OPTIONAL</span>
+      <button class="slot-remove" title="Remove module">✕</button>
+    `;
+    el.querySelector('.slot-remove').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      removeModule(sem, idx);
+    });
+    el.addEventListener('click', () => openModal(sem, idx));
+
+    // Optional slots in y2Draggable sems are draggable
+    if (isDraggableSlot) {
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', (e) => {
+        dragInfo = { sem, idx, modId: id };
+        el.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+        // If drop didn't happen (cancelled), clear dragInfo
+        dragInfo = null;
+      });
+    }
+  }
+
+  return el;
+}
+
+// ── THIRD YEAR PROJECT ────────────────────────────────────────────────────────
+function placeThirdYearProject(sem, slotIdx) {
+  if (sem === 4) {
+    build[4][slotIdx] = 'TYP_FIRST';
+    if (!build[5].includes('TYP_SECOND')) build[5].push('TYP_SECOND');
+  } else {
+    build[5][slotIdx] = 'TYP_SECOND';
+    if (!build[4].includes('TYP_FIRST')) build[4].push('TYP_FIRST');
+  }
+}
+
+function removeThirdYearProject() {
+  [4, 5].forEach(sem => {
+    if (!build[sem]) return;
+    build[sem] = build[sem].filter(id => id !== 'TYP_FIRST' && id !== 'TYP_SECOND');
+  });
+  render();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+function openModal(sem, slotIdx) {
+  modalTarget = { sem, slotIdx };
+  const available = getAvailableForSlot(sem);
+
+  document.getElementById('modal-title').textContent = 'Pick a Module';
+  document.getElementById('modal-subtitle').textContent = SEM_LABELS[sem].toUpperCase();
+  document.getElementById('modal-search').value = '';
+  document.getElementById('modal').style.display = 'flex';
+  renderModalList(available, '');
+
+  document.getElementById('modal-search').focus();
+  document.getElementById('modal-search').addEventListener('input', (e) => {
+    renderModalList(available, e.target.value.toLowerCase());
+  });
+}
+
+function renderModalList(mods, filter) {
+  const list = document.getElementById('modal-list');
+  list.innerHTML = '';
+
+  const filtered = filter
+    ? mods.filter(m => m.name.toLowerCase().includes(filter) || m.code.toLowerCase().includes(filter))
+    : mods;
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="modal-empty">No modules available for this slot.<br>Check that you have the required prerequisites selected.</div>`;
+    return;
+  }
+
+  filtered.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'modal-item';
+    const isTyp = m.id === TYP_ID;
+    item.innerHTML = `
+      <div class="modal-item-code">${m.code}</div>
+      <div class="modal-item-name">${m.name}${isTyp ? ' <span style="font-size:9px;font-family:var(--mono);color:var(--purple);">spans both sems</span>' : ''}</div>
+    `;
+    item.addEventListener('click', () => {
+      if (isTyp) {
+        placeThirdYearProject(modalTarget.sem, modalTarget.slotIdx);
+      } else {
+        build[modalTarget.sem][modalTarget.slotIdx] = m.id;
+      }
+      closeModal();
+      render();
+    });
+    list.appendChild(item);
+  });
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+  modalTarget = null;
+  const old = document.getElementById('modal-search');
+  const fresh = old.cloneNode(true);
+  old.parentNode.replaceChild(fresh, old);
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// ── REMOVE MODULE ─────────────────────────────────────────────────────────────
+function removeModule(sem, slotIdx) {
+  const def = COURSE_DEFS[currentCourse];
+  const id = build[sem][slotIdx];
+  if (!id || def.compulsory.has(id)) return;
+  build[sem][slotIdx] = null;
+  cascadeRemove(id);
+  render();
+}
+
+function cascadeRemove(removedId) {
+  if (!removedId) return;
+  const def = COURSE_DEFS[currentCourse];
+
+  Object.keys(build).forEach(sem => {
+    build[sem].forEach((id, idx) => {
+      if (!id || def.compulsory.has(id)) return;
+      if (id.startsWith('TYP_') || id.startsWith('MSCI_')) return;
+      const mod = ALL_MODULES.find(m => m.id === id);
+      if (!mod) return;
+      if (mod.prereqs.includes(removedId) || mod.repeatedPrereqs.includes(removedId)) {
+        if (!hasPrereqs(mod, parseInt(sem))) {
+          build[sem][idx] = null;
+          cascadeRemove(id);
+        }
+      }
+    });
+  });
+}
+
+// ── COURSE TABS ───────────────────────────────────────────────────────────────
+const tabsEl = document.getElementById('course-tabs');
+Object.entries(COURSE_DEFS).forEach(([key, def]) => {
+  const btn = document.createElement('button');
+  btn.className = 'pill-btn' + (key === currentCourse ? ' active' : '');
+  btn.textContent = def.label;
+  btn.dataset.course = key;
+  btn.addEventListener('click', () => {
+    if (currentCourse === key) return;
+    currentCourse = key;
+    tabsEl.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    initBuild();
+    render();
+  });
+  tabsEl.appendChild(btn);
+});
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+initBuild();
+render();
+</script>
+</body>
+</html>
